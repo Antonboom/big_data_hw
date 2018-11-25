@@ -5,6 +5,17 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
 
+/*
+INPUT:
+{
+    "0528881469": ("5.0:1","1.0:1","3.0:1","2.0:1", "1.0:1")
+}
+
+OUTPUT:
+{
+    "0528881469": "12.0:5"
+}
+ */
 public class ProductAvgCombiner extends Reducer<Text,SumCountWritable,Text,SumCountWritable> {
 
     private SumCountWritable result = new SumCountWritable();
@@ -19,11 +30,7 @@ public class ProductAvgCombiner extends Reducer<Text,SumCountWritable,Text,SumCo
             sum += val.getSum();
             count += val.getCount();
         }
-
         result.set(sum, count);
-
-        //System.out.println("Combiner");
-        //System.out.println(result.toString());
 
         context.write(key, result);
     }

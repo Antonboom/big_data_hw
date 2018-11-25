@@ -8,6 +8,9 @@ import java.io.IOException;
 
 public class SumCountWritable implements Writable {
 
+    private double sum;
+    private int count;
+
     SumCountWritable() {
         this.sum = 0d;
         this.count = 0;
@@ -17,9 +20,6 @@ public class SumCountWritable implements Writable {
         this.sum = sum;
         this.count = count;
     }
-
-    private double sum;
-    private int count;
 
     public void set(double sum, int count) {
         this.sum = sum;

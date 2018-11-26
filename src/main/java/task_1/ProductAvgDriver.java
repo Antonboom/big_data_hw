@@ -30,6 +30,7 @@ public class ProductAvgDriver extends Configured implements Tool {
 
     public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
+        conf.set("mapred.textoutputformat.separator", ",");
         System.exit(ToolRunner.run(conf, new ProductAvgDriver(), args));
     }
 }

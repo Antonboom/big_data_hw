@@ -16,7 +16,7 @@ OUTPUT:
     "0528881469": "12.0:5"
 }
  */
-public class ProductAvgCombiner extends Reducer<Text,SumCountWritable,Text,SumCountWritable> {
+public class ProductAvgCombiner extends Reducer<Text, SumCountWritable, Text, SumCountWritable> {
 
     private SumCountWritable result = new SumCountWritable();
 

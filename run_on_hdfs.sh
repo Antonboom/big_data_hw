@@ -10,22 +10,25 @@ set -e -u -o pipefail
 source "$(pwd)/src/main/java/${PACKAGE}/env.sh"
 
 : "${MAIN_CLASS}"
-: "${INPUT_FILE}"
+: "${INPUT_FILES}"
 : "${OUTPUT_FILE:=/tmp/${PACKAGE}__${RANDOM}.csv}"
 
 USER_DIR=/user/cloudera
 WRK_DIR=${USER_DIR}/hw_part_1/${PACKAGE}
 
 printf "Prepare HDFS working directory...\n"
-hdfs dfs -rm -r -f ${WRK_DIR}/*
-hdfs dfs -rm -r -f ${USER_DIR}/.Trash
+hdfs dfs -rm -r -f -skipTrash ${WRK_DIR}/*
 hdfs dfs -mkdir -p ${WRK_DIR}/data
 
-printf "\nCopy ${INPUT_FILE} to HDFS workdir...\n"
-JAR_INPUT="hdfs:///${WRK_DIR}/data/$(basename ${INPUT_FILE})"
-hdfs dfs -copyFromLocal ${INPUT_FILE} ${JAR_INPUT}
+JAR_INPUT=""
+for input_file in ${INPUT_FILES[@]}; do
+    printf "\nCopy ${input_file} to HDFS workdir...\n"
+    FILE_PATH_ON_HDFS="hdfs:///${WRK_DIR}/data/$(basename ${input_file})"
+    JAR_INPUT="${JAR_INPUT} ${FILE_PATH_ON_HDFS}"
+    hdfs dfs -copyFromLocal ${input_file} ${FILE_PATH_ON_HDFS}
+done
 
-printf "\nRun ${JAR_FILE}...\n"
+printf "\nRun ${MAIN_CLASS} from ${JAR_FILE}...\n"
 hadoop jar ${JAR_FILE} ${MAIN_CLASS} ${JAR_INPUT} ${WRK_DIR}/output
 
 printf "\nHDFS workdir:\n"

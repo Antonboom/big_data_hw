@@ -13,9 +13,9 @@ INPUT:
 }
 
 OUTPUT:
-0528881469 : 2.4
+0528881469,2.4
  */
-public class ProductAvgReducer extends Reducer<Text,SumCountWritable,Text,DoubleWritable> {
+public class ProductAvgReducer extends Reducer<Text, SumCountWritable, Text, DoubleWritable> {
 
     private SumCountWritable result = new SumCountWritable();
 
@@ -32,8 +32,6 @@ public class ProductAvgReducer extends Reducer<Text,SumCountWritable,Text,Double
         result.set(sum, count);
 
         double average = sum / count;
-
-        System.out.println(key + "," + average);
 
         context.write(key, new DoubleWritable(average));
     }

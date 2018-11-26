@@ -30,7 +30,7 @@ public class ProductNameRatingDriver extends Configured implements Tool {
 
     public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
-        conf.set("mapred.textoutputformat.separator", ",");
+        conf.set("mapreduce.output.textoutputformat.separator", ",");
         System.exit(ToolRunner.run(conf, new ProductNameRatingDriver(), args));
     }
 }

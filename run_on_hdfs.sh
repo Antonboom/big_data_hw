@@ -12,6 +12,7 @@ source "$(pwd)/src/main/java/${PACKAGE}/env.sh"
 : "${MAIN_CLASS}"
 : "${INPUT_FILES}"
 : "${OUTPUT_FILE:=/tmp/${PACKAGE}__${RANDOM}.csv}"
+: "${JAR_ADDITIONAL_ARGS:=}"
 
 USER_DIR=/user/cloudera
 WRK_DIR=${USER_DIR}/hw_part_1/${PACKAGE}
@@ -29,7 +30,7 @@ for input_file in ${INPUT_FILES[@]}; do
 done
 
 printf "\nRun ${MAIN_CLASS} from ${JAR_FILE}...\n"
-hadoop jar ${JAR_FILE} ${MAIN_CLASS} ${JAR_INPUT} ${WRK_DIR}/output
+hadoop jar ${JAR_FILE} ${MAIN_CLASS} ${JAR_INPUT} ${WRK_DIR}/output ${JAR_ADDITIONAL_ARGS}
 
 printf "\nHDFS workdir:\n"
 hdfs dfs -ls -R ${WRK_DIR}

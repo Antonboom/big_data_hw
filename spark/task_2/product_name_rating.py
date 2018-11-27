@@ -3,7 +3,7 @@ import json
 import sys
 from pyspark import SparkContext, SparkConf
 
-conf = SparkConf().setAppName('ProductAvgRating')
+conf = SparkConf().setAppName('ProductNameRating')
 sc = SparkContext(conf=conf)
 
 rdd_products = sc.textFile(sys.argv[1])

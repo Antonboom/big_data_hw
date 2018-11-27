@@ -29,7 +29,7 @@ def to_csv_line(data):
     for item in data:
         field = str(item)
         if delimiter in field:
-            field = '"{}"'.format(field)
+            field = '"{0}"'.format(field)
         fields.append(field)
     return delimiter.join(fields)
 

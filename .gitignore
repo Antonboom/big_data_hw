@@ -3,3 +3,9 @@ out/
 .idea/
 lib/
 META-INF/
+
+local_settings.py
+
+__pycache__
+.*pyc
+

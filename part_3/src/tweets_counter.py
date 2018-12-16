@@ -13,7 +13,6 @@ APP_NAME = 'UsersTweetsCounter'
 BATCH_DURATION_SEC = 30
 
 MINUTE = 60
-TEN_MINUTES = MINUTE * 10
 
 # Init streaming
 spark_context = SparkContext(appName=APP_NAME)
@@ -55,11 +54,12 @@ screen_names = kafka_stream.map(lambda data: rapidjson.loads(data[1])['screen_na
 screen_name__count = screen_names.map(lambda name: (name, 1)).reduceByKey(ssum)
 
 def print_windowed(data_stream, func, time):
+	# TODO(a.telyshev): Use countByValueAndWindow?
 	windowed_data = data_stream.reduceByKeyAndWindow(func, None, windowDuration=time, slideDuration=time)
 	windowed_data.transform(lambda rdd: rdd.coalesce(1).sortByKey(ascending=False)).pprint(100)
 
 print_windowed(screen_name__count, ssum, MINUTE)
-print_windowed(screen_name__count, ssum, TEN_MINUTES)
+print_windowed(screen_name__count, ssum, MINUTE * 10)
 
 # Start and deinit later
 streaming_context.start()

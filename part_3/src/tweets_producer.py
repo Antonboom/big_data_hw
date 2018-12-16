@@ -7,6 +7,8 @@ import tweepy
 from tweepy.streaming import json
 from kafka import KafkaProducer
 
+from local_settings import *
+
 logger = logging.getLogger('tweets_producer')
 logger.setLevel(logging.INFO)
 
@@ -17,11 +19,6 @@ logger.addHandler(handler)
 
 KAFKA_SERVERS = ('localhost:9092',)
 TWEETS_KAFKA_TOPIC = 'Tweets'
-
-CONSUMER_TOKEN = ''
-CONSUMER_SECRET = ''
-ACCESS_TOKEN = ''
-ACCESS_SECRET = ''
 
 USERS_IDS = ('285532415', '147964447', '34200559', '338960856', '200036850', '72525490', '20510157', '99918629')
 
@@ -55,10 +52,7 @@ class TweetsStreamListener(BaseListener):
 
         screen_name, uid = user['screen_name'], user['id']
 
-        logger.info(
-            'Received 1 tweet from @%s[%s]. Send to Kafka topic `%s`',
-            screen_name, uid, TWEETS_KAFKA_TOPIC
-        )
+        logger.info('Received tweet #%s from @%s[%s]', tid, screen_name, uid)
 
         self.kafka_producer.send(TWEETS_KAFKA_TOPIC,
             rapidjson.dumps({
@@ -76,7 +70,7 @@ def main():
     api = tweepy.API(auth)
 
     tweets_stream = tweepy.Stream(auth=api.auth, listener=TweetsStreamListener())
-    logger.info('Start tweets receiving...')
+    logger.info('Start tweets receiving... Use kafka topic `%s`', TWEETS_KAFKA_TOPIC)
     tweets_stream.filter(follow=USERS_IDS)
 
 

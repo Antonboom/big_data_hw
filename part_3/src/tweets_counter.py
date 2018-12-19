@@ -33,35 +33,26 @@ def ssum(a, b):
 	return a + b
 
 # [
-#	(None, '{"tid":1074310692235292672,"screen_name":"Odev110"}'),
-#	(None, '{"tid":1074310709134139392,"screen_name":"kirillica1957"}')
-#	(None, '{"tid":1074310692235292673,"screen_name":"Odev110"}')
+#	(None, 'RT_russian'),
+#	(None, 'rentvchannel')
+#	(None, 'RT_russian')
 # ] => [
-#	'Odev110',
-# 	'kirillica1957',
-# 	'Odev110'
+# 	('RT_russian', 2),
+#	('rentvchannel', 1)
 # ]
-screen_names = kafka_stream.map(lambda data: rapidjson.loads(data[1])['screen_name'])
+user__count = kafka_stream.map(lambda none__user: (none__user[1], 1)).reduceByKey(ssum)
 
-# [
-#	'Odev110',
-# 	'kirillica1957',
-# 	'Odev110'
-# ] => [
-# 	('Odev110', 2),
-#	('kirillica1957', 1)
-# ]
-screen_name__count = screen_names.map(lambda name: (name, 1)).reduceByKey(ssum)
 
 def print_windowed(data_stream, func, time):
 	# TODO(a.telyshev): Use countByValueAndWindow?
 	windowed_data = data_stream.reduceByKeyAndWindow(func, None, windowDuration=time, slideDuration=time)
-	windowed_data.transform(lambda rdd: rdd.coalesce(1).sortByKey(ascending=False)).pprint(100)
+	windowed_data.transform(
+		lambda rdd: rdd.coalesce(1).sortBy(lambda user__count: user__count[1], ascending=False)
+	).pprint(100)
 
-print_windowed(screen_name__count, ssum, MINUTE)
-print_windowed(screen_name__count, ssum, MINUTE * 10)
+print_windowed(user__count, ssum, MINUTE)
+print_windowed(user__count, ssum, MINUTE * 10)
 
 # Start and deinit later
 streaming_context.start()
 streaming_context.awaitTermination()
-
